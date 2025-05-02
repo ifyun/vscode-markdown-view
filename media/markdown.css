@@ -1,0 +1,105 @@
+.markdown-body {
+  padding-bottom: 24px;
+  --color-note: #4493f8;
+  --color-tip: #3fb950;
+  --color-important: #ab7df8;
+  --color-warning: #d29922;
+  --color-caution: #f85149;
+}
+
+blockquote {
+  margin-bottom: 16px;
+  padding: 0.5em;
+}
+
+blockquote p {
+  margin-bottom: 0;
+}
+
+.contains-task-list {
+  padding-left: 16px;
+  list-style: none;
+}
+
+input[type="checkbox"] {
+  appearance: none;
+}
+
+input[type="checkbox"]::after {
+  content: "⬜";
+}
+
+input[type="checkbox"]:checked::after {
+  content: "✅";
+}
+
+.task-list-item {
+  display: flex;
+  align-items: center;
+}
+
+.markdown-alert {
+  padding: 0.5em 1.5em;
+  border-left-width: 0.25em;
+  border-left-style: solid;
+  margin-bottom: 16px;
+}
+
+.markdown-alert-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5em;
+  text-transform: capitalize;
+  font-weight: bold;
+}
+
+.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+.katex-html > .newline {
+  margin-top: 0.5em;
+}
+
+.regulex {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}

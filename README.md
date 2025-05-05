@@ -2,6 +2,7 @@
 
 - 基于 VS Code 默认 Markdown 样式
 - VS Code Markdown 字体设置对本插件有效
+- 可预览 HTML（Markdown 样式对 HTML 内容生效）
 
 ## 扩展语法
 

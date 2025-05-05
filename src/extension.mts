@@ -34,6 +34,7 @@ let template = `
     :root {
       --markdown-font-family: {{markdown-font}};
       --markdown-font-size: {{markdown-font-size}};
+      --markdown-line-height: {{markdown-line-height}};
     }
   </style>
 </head>
@@ -73,12 +74,6 @@ function getRegexFlags(re) {
 const separator = process.platform === "win32" ? "\\" : "/"
 let currentFileName = ""
 let panel: vscode.WebviewPanel | null = null
-
-const { fontFamily, fontSize } =
-  vscode.workspace.getConfiguration("markdown.preview")
-template = template
-  .replace("{{markdown-font}}", fontFamily)
-  .replace("{{markdown-font-size}}", fontSize)
 
 function markdownCompiler(): any {
   return unified()
@@ -120,13 +115,13 @@ function start(context: vscode.ExtensionContext) {
   if (panel === null) {
     createMarkdownView(context)
   }
+
   render(context)
   initEvent(context)
 }
 
 function initEvent(context: vscode.ExtensionContext) {
-  vscode.workspace.onDidChangeTextDocument(debounce(() => render(context), 200))
-
+  vscode.workspace.onDidChangeTextDocument(debounce(() => render(context), 300))
   vscode.window.onDidChangeActiveTextEditor((editor) => {
     if (
       editor !== undefined &&
@@ -136,6 +131,7 @@ function initEvent(context: vscode.ExtensionContext) {
       if (panel === null) {
         createMarkdownView(context)
       }
+
       render(context)
       currentFileName = editor.document.fileName
     }
@@ -183,6 +179,17 @@ async function render(context: vscode.ExtensionContext) {
       .split(separator)
       .pop()!
   })
+
+  const ext = vscode.window.activeTextEditor?.document.fileName
+    .split(separator)
+    .pop()
+    ?.split(".")
+    .pop()
+
+  // 读取 VS Code 内置 Markdown 配置
+  const { fontFamily, fontSize, lineHeight } =
+    vscode.workspace.getConfiguration("markdown.preview")
+
   const markdownStyle = panel!.webview.asWebviewUri(
     vscode.Uri.joinPath(cssPathUri!, "media/markdown.css")
   )
@@ -198,12 +205,26 @@ async function render(context: vscode.ExtensionContext) {
   const regulexLib = panel!.webview.asWebviewUri(
     vscode.Uri.joinPath(context.extensionUri, "dist/lib/regulex.js")
   )
-  const content = String(
-    await markdownCompiler().process(
-      vscode.window.activeTextEditor?.document.getText()
+
+  let content = ""
+
+  if (ext === "md") {
+    content = String(
+      await markdownCompiler().process(
+        vscode.window.activeTextEditor!.document.getText()
+      )
     )
-  )
+  }
+
+  if (ext === "html") {
+    // HTML 文档直接显示内容
+    content = vscode.window.activeTextEditor!.document.getText()
+  }
+
   panel!.webview.html = template
+    .replace("{{markdown-font}}", fontFamily)
+    .replace("{{markdown-font-size}}", fontSize)
+    .replace("{{markdown-line-height}}", lineHeight)
     .replace("{{markdownStyle}}", markdownStyle.toString())
     .replace("{{extraStyle}}", extraStyle.toString())
     .replace("{{highlightStyle}}", highlightStyle.toString())

@@ -2,7 +2,7 @@
   "name": "markdown-view",
   "displayName": "Markdown View",
   "description": "Markdown Render",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "ifyun",
   "license": "MIT",
   "repository": {
@@ -16,7 +16,8 @@
     "Other"
   ],
   "activationEvents": [
-    "onLanguage:markdown"
+    "onLanguage:markdown",
+    "onLanguage:html"
   ],
   "main": "./dist/extension.js",
   "l10n": "./l10n",
@@ -35,7 +36,7 @@
     "menus": {
       "editor/title": [
         {
-          "when": "resourceLangId == markdown",
+          "when": "resourceLangId == markdown || resourceLangId == html",
           "command": "markdown-view.preview",
           "group": "navigation"
         }

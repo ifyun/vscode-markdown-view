@@ -4,6 +4,20 @@
 - VS Code Markdown 字体设置对本插件有效
 - 可预览 HTML（Markdown 样式对 HTML 内容生效）
 
+## 安装
+
+从代码打包安装：
+
+```bash
+pnpm install
+```
+
+```bash
+pnpm vsce package --no-dependencies
+```
+
+在 VS Code 扩展面板菜单中选择“从 VSIX 安装...”。
+
 ## 扩展语法
 
 Todo List:

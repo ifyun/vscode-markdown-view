@@ -121,7 +121,14 @@ function start(context: vscode.ExtensionContext) {
 }
 
 function initEvent(context: vscode.ExtensionContext) {
-  vscode.workspace.onDidChangeTextDocument(debounce(() => render(context), 300))
+  vscode.workspace.onDidChangeTextDocument(
+    debounce((e: vscode.TextDocumentChangeEvent) => {
+      const ext = e.document.fileName.split(".").pop()
+      if (ext === "md" || ext === "html") {
+        render(context)
+      }
+    }, 300)
+  )
   vscode.window.onDidChangeActiveTextEditor((editor) => {
     if (
       editor !== undefined &&

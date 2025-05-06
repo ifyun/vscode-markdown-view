@@ -14,62 +14,17 @@ import rehypeImage from "./plugin/rehype-image.mjs"
 import remarkAlert from "./plugin/remark-alert.mjs"
 import remarkHighlight from "./plugin/remark-highlight.mjs"
 import remarkRegulex from "./plugin/remark-regulex.mjs"
+import template from "./template.html?raw"
+
+type Message = {
+  command: string
+  link: string
+}
 
 // VS Code Default Markdown CSS
 const cssPathUri = vscode.extensions.getExtension(
   "vscode.markdown-language-features"
 )?.extensionUri
-
-let template = `
-<html>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" type="text/css" href="{{markdownStyle}}">
-  <link rel="stylesheet" type="text/css" href="{{extraStyle}}">
-  <link rel="stylesheet" type="text/css" href="{{highlightStyle}}">
-  <link rel="stylesheet" type="text/css" href="{{katexStyle}}">
-  <script type="text/javascript" src="{{regulexLib}}"></script>
-  <style>
-    :root {
-      --markdown-font-family: {{markdown-font}};
-      --markdown-font-size: {{markdown-font-size}};
-      --markdown-line-height: {{markdown-line-height}};
-    }
-  </style>
-</head>
-<body class="scrollBeyondLastLine">
-<div class="markdown-body">
-  {{markdown}}
-</div>
-<script>
-window.addEventListener("DOMContentLoaded", () => {
-  let parse = require("regulex").parse
-  let visualize = require("regulex").visualize
-  let Raphael = require("regulex").Raphael
-
-  document.querySelectorAll(".regulex")?.forEach((e) => {
-    try {
-      let re = new RegExp(e.getAttribute("data-value"))
-      let paper = Raphael(e.id, 0, 0)
-      visualize(parse(re.source), getRegexFlags(re), paper)
-    } catch (err) {
-      e.innerHTML = err.message
-    }
-  })
-})
-
-function getRegexFlags(re) {
-  let flags = ""
-  flags += re.ignoreCase ? "i" : ""
-  flags += re.global ? "g" : ""
-  flags += re.multiline ? "m" : ""
-  return flags
-}
-</script>
-</body>
-</html>
-`
 
 const separator = process.platform === "win32" ? "\\" : "/"
 let currentFileName = ""
@@ -109,7 +64,9 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() {
+  panel?.dispose()
+}
 
 function start(context: vscode.ExtensionContext) {
   if (panel === null) {
@@ -120,6 +77,7 @@ function start(context: vscode.ExtensionContext) {
   initEvent(context)
 }
 
+// 注册事件
 function initEvent(context: vscode.ExtensionContext) {
   vscode.workspace.onDidChangeTextDocument(
     debounce((e: vscode.TextDocumentChangeEvent) => {
@@ -129,6 +87,7 @@ function initEvent(context: vscode.ExtensionContext) {
       }
     }, 300)
   )
+
   vscode.window.onDidChangeActiveTextEditor((editor) => {
     if (
       editor !== undefined &&
@@ -153,7 +112,7 @@ function createMarkdownView(context: vscode.ExtensionContext) {
         .split(separator)
         .pop()
     }),
-    { viewColumn: vscode.ViewColumn.Beside, preserveFocus: true },
+    { viewColumn: vscode.ViewColumn.Two, preserveFocus: true },
     {
       enableScripts: true,
       retainContextWhenHidden: true,
@@ -170,6 +129,17 @@ function createMarkdownView(context: vscode.ExtensionContext) {
     dark: vscode.Uri.joinPath(context.extensionUri, "media/preview-dark.svg")
   }
 
+  panel.webview.onDidReceiveMessage(
+    async (message: Message) => {
+      if (message.command === "open") {
+        const uri = vscode.Uri.parse("file:" + message.link)
+        await vscode.commands.executeCommand("vscode.open", uri)
+      }
+    },
+    null,
+    context.subscriptions
+  )
+
   panel.onDidDispose(
     () => {
       panel = null
@@ -181,17 +151,11 @@ function createMarkdownView(context: vscode.ExtensionContext) {
 
 // 渲染 Markdown
 async function render(context: vscode.ExtensionContext) {
-  panel!.title = vscode.l10n.t("Preview {fileName}", {
-    fileName: vscode.window.activeTextEditor?.document.fileName
-      .split(separator)
-      .pop()!
-  })
-
-  const ext = vscode.window.activeTextEditor?.document.fileName
-    .split(separator)
-    .pop()
-    ?.split(".")
-    .pop()
+  const filePath =
+    vscode.window.activeTextEditor?.document.fileName.split(separator)
+  const fileName = filePath?.pop()
+  const directory = filePath?.join("/")
+  const ext = fileName?.split(".").pop()
 
   // 读取 VS Code 内置 Markdown 配置
   const { fontFamily, fontSize, lineHeight } =
@@ -228,7 +192,9 @@ async function render(context: vscode.ExtensionContext) {
     content = vscode.window.activeTextEditor!.document.getText()
   }
 
+  panel!.title = vscode.l10n.t("Preview {fileName}", { fileName })
   panel!.webview.html = template
+    .replace("{{directory}}", directory!)
     .replace("{{markdown-font}}", fontFamily)
     .replace("{{markdown-font-size}}", fontSize)
     .replace("{{markdown-line-height}}", lineHeight)

@@ -44,6 +44,9 @@ importers:
       esbuild-plugin-copy:
         specifier: ^2.1.1
         version: 2.1.1(esbuild@0.24.0)
+      esbuild-raw-plugin:
+        specifier: ^0.2.0
+        version: 0.2.0
       eslint:
         specifier: ^9.13.0
         version: 9.15.0
@@ -811,6 +814,9 @@ packages:
     resolution: {integrity: sha512-Bk66jpevTcV8KMFzZI1P7MZKZ+uDcrZm2G2egZ2jNIvVnivDpodZI+/KnpL3Jnap0PBdIHU7HwFGB8r+vV5CVw==}
     peerDependencies:
       esbuild: '>= 0.14.0'
+
+  esbuild-raw-plugin@0.2.0:
+    resolution: {integrity: sha512-e7fCTfnKe3JRMtNd+GuuFGxKO9GhguX/Wt+wHEjeW6Eq7DXiP/HxL7Zf798OEfPebyprHEjr6A3+yBqIDUif8w==}
 
   esbuild@0.24.0:
     resolution: {integrity: sha512-FuLPevChGDshgSicjisSooU0cemp/sGXR841D5LHMB7mTVOmsEHcAxaH3irL53+8YDIeVNQEySh4DaYU/iuPqQ==}
@@ -2899,6 +2905,8 @@ snapshots:
       esbuild: 0.24.0
       fs-extra: 10.1.0
       globby: 11.1.0
+
+  esbuild-raw-plugin@0.2.0: {}
 
   esbuild@0.24.0:
     optionalDependencies:

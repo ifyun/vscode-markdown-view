@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta id="directory" data-directory="{{directory}}" />
+    <title>Markdown View</title>
+    <link rel="stylesheet" type="text/css" href="{{markdownStyle}}" />
+    <link rel="stylesheet" type="text/css" href="{{extraStyle}}" />
+    <link rel="stylesheet" type="text/css" href="{{highlightStyle}}" />
+    <link rel="stylesheet" type="text/css" href="{{katexStyle}}" />
+    <script type="text/javascript" src="{{regulexLib}}"></script>
+    <style>
+      :root {
+        --markdown-font-family: {{markdown-font}};
+        --markdown-font-size: {{markdown-font-size}};
+        --markdown-line-height: {{markdown-line-height}};
+      }
+    </style>
+  </head>
+  <body class="scrollBeyondLastLine">
+    <div class="markdown-body">{{markdown}}</div>
+    <script>
+      const vscode = acquireVsCodeApi()
+      window.addEventListener("DOMContentLoaded", () => {
+        let parse = require("regulex").parse
+        let visualize = require("regulex").visualize
+        let Raphael = require("regulex").Raphael
+
+        document.querySelectorAll(".regulex")?.forEach((e) => {
+          try {
+            let re = new RegExp(e.getAttribute("data-value"))
+            let paper = Raphael(e.id, 0, 0)
+            visualize(parse(re.source), getRegexFlags(re), paper)
+          } catch (err) {
+            e.innerHTML = err.message
+          }
+        })
+
+        const directory = document
+          .getElementById("directory")
+          .getAttribute("data-directory")
+
+        document.querySelectorAll("a").forEach((e) => {
+          if (!e.href.startsWith("http://") && !e.href.startsWith("https://")) {
+            e.addEventListener("click", () => {
+              vscode.postMessage({
+                command: "open",
+                link: directory + "/" + e.getAttribute("href")
+              })
+            })
+          }
+        })
+      })
+
+      function getRegexFlags(re) {
+        let flags = ""
+        flags += re.ignoreCase ? "i" : ""
+        flags += re.global ? "g" : ""
+        flags += re.multiline ? "m" : ""
+        return flags
+      }
+    </script>
+  </body>
+</html>

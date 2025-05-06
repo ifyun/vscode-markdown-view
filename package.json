@@ -2,7 +2,7 @@
   "name": "markdown-view",
   "displayName": "Markdown View",
   "description": "Markdown Render",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "author": "ifyun",
   "license": "MIT",
   "repository": {
@@ -70,6 +70,7 @@
     "@vscode/test-electron": "^2.4.1",
     "esbuild": "^0.24.0",
     "esbuild-plugin-copy": "^2.1.1",
+    "esbuild-raw-plugin": "^0.2.0",
     "eslint": "^9.13.0",
     "highlight.js": "^11.10.0",
     "katex": "^0.16.11",

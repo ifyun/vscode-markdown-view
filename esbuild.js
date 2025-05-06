@@ -1,5 +1,6 @@
-const copy = require("esbuild-plugin-copy").copy
 const context = require("esbuild").context
+const copy = require("esbuild-plugin-copy").copy
+const raw = require("esbuild-raw-plugin").raw
 
 const production = process.argv.includes("--production")
 const watch = process.argv.includes("--watch")
@@ -40,6 +41,7 @@ async function main() {
     logLevel: "silent",
     plugins: [
       esbuildProblemMatcherPlugin,
+      raw(),
       copy({
         assets: [
           {

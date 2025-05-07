@@ -53,7 +53,7 @@ async function main() {
             to: ["assets"]
           },
           {
-            from: ["node_modules/regulex/dist/*.js"],
+            from: ["lib/*.js"],
             to: ["lib"]
           }
         ]
